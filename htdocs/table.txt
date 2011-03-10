@@ -1,7 +1,0 @@
-table
-
-game
-id name secret
-
-score
-gid name score
