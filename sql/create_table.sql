@@ -1,0 +1,19 @@
+-- create table
+DROP TABLE IF EXISTS score;
+DROP TABLE IF EXISTS game;
+
+CREATE TABLE game (
+  id INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
+  name VARCHAR(10) NOT NULL,
+  secret VARCHAR(32) NOT NULL,
+  INDEX(id)
+) ENGINE=InnoDB;
+
+CREATE TABLE score (
+  id int NOT NULL PRIMARY KEY AUTO_INCREMENT,
+  gid int NOT NULL,
+  name VARCHAR(10) NOT NULL,
+  score int NOT NULL,
+  INDEX(gid),
+  FOREIGN KEY(gid) REFERENCES game(id)
+) ENGINE=InnoDB;
