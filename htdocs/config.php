@@ -16,5 +16,11 @@ define("DB_PASSWORD", "ranking");
   }
 
   function isValidScore($score) {
-    return preg_match('/^[0-9]{1,10}$/', $score) == 1;
+    return (preg_match('/^[0-9]{1,10}$/', $score) == 1) && (intval($score) >= 0);
   }
+
+  /*
+  function isValidToken($token, $gameName, $userName, $score, $secretKey) {
+    return $token === md5($gameName . $userName . $score . $secretKey);
+  }
+  */

@@ -1,7 +1,9 @@
 <?php
   require_once 'config.php';
+/*
   header( "Content-Type: text/xml; Charset=utf-8" );
   echo "<?xml version=\"1.0\" encoding=\"utf-8\"?>\r\n";
+ */
 
   if (isset($_GET['action'])) {
     $actionName = $_GET['action'];
@@ -42,15 +44,13 @@
     if (isset($_POST['score'])) {
       $result = parseScoreData($_POST['score']);
       $gameName = $result['gameName'];
-      $secretKey = $result['secretKey'];
       $userName = $result['userName'];
       $score = $result['score'];
-
+      $token = $result['token'];
       if (isValidGameName($gameName)
-          && isValidSecretKey($secretKey) 
           && isValidUserName($userName)
           && isValidScore($score)) {
-        executeAddScoreStatement($gameName, $secretKey, $userName, $score);
+        executeAddScoreStatement($gameName, $userName, $score, $token);
         printOK();
       } else {
         //error
@@ -61,21 +61,30 @@
     }
   }
 
-  function executeAddScoreStatement($gameName, $secretKey, $userName, $score) {
+  function executeAddScoreStatement($gameName, $userName, $score, $token) {
     $pdo = getDBManager();
-    $statement = $pdo->prepare('INSERT INTO score (gid, name, score) VALUES ((SELECT id FROM game WHERE name = :game AND secret = :secret), :user, :score)');
+    //echo $gameName, $userName, $score, $token;
+    //exit;
+    $statement = $pdo->prepare('
+      INSERT INTO score (gid, name, score)
+      VALUES (
+        (SELECT id FROM game WHERE name = :game
+          AND MD5(CONCAT(:game, :user, :score, (SELECT secret FROM game WHERE name = :game))) = :token),
+        :user, :score)
+    ');
     $statement->bindValue(':game', $gameName);
-    $statement->bindValue(':secret', $secretKey);
     $statement->bindValue(':user', $userName);
     $statement->bindValue(':score', $score);
+    $statement->bindValue(':token', $token);
     $statement->execute();
     unset($pdo);
   }
 
   function parseScoreData($chunked) {
-    //format -> rand-gameName-secretKey-userName-score to base64encode
+    //format -> rand-gameName-userName-score-token to base64encode
+    //token is md5(gamaeName . userName . score . secretKey)
     $result = array();
-    $keys = array(null, 'gameName', 'secretKey', 'userName', 'score');
+    $keys = array(null, 'gameName', 'userName', 'score', 'token');
     $raw = explode('-', base64_decode($chunked));
     for ($i = 1; $i < count($raw); $i++) {
       $result[$keys[$i]] = $raw[$i];

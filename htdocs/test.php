@@ -1,6 +1,9 @@
 <?php
+//echo md5('digdug' . 'test' . '123' . 'hogehoge');
+//exit;
 function hoge() {
-  $data = array(rand(), 'digdug', 'hogehoge', 'llll', '999999');
+  $token = md5('digdug' . 'john' . '9876' . 'hogehoge');
+  $data = array(rand(0, 9999), 'digdug', 'john', '9876', $token);
   echo base64_encode(implode('-', $data));
 }
 function huga() {
