@@ -1,9 +1,7 @@
 <?php
   require_once 'config.php';
-/*
   header( "Content-Type: text/xml; Charset=utf-8" );
   echo "<?xml version=\"1.0\" encoding=\"utf-8\"?>\r\n";
- */
 
   if (isset($_GET['action'])) {
     $actionName = $_GET['action'];
@@ -28,6 +26,7 @@
 
   function printError() {
     echo "<result>error</result>";
+    exit;
   }
   
   function printOK() {
@@ -62,22 +61,26 @@
   }
 
   function executeAddScoreStatement($gameName, $userName, $score, $token) {
-    $pdo = getDBManager();
-    //echo $gameName, $userName, $score, $token;
-    //exit;
-    $statement = $pdo->prepare('
-      INSERT INTO score (gid, name, score)
-      VALUES (
-        (SELECT id FROM game WHERE name = :game
-          AND MD5(CONCAT(:game, :user, :score, (SELECT secret FROM game WHERE name = :game))) = :token),
-        :user, :score)
-    ');
-    $statement->bindValue(':game', $gameName);
-    $statement->bindValue(':user', $userName);
-    $statement->bindValue(':score', $score);
-    $statement->bindValue(':token', $token);
-    $statement->execute();
-    unset($pdo);
+    try {
+      $pdo = getDBManager();
+      //echo $gameName, $userName, $score, $token;
+      //exit;
+      $statement = $pdo->prepare('
+        INSERT INTO score (gid, name, score)
+        VALUES (
+          (SELECT id FROM game WHERE name = :game
+            AND MD5(CONCAT(:game, :user, :score, (SELECT secret FROM game WHERE name = :game))) = :token),
+          :user, :score)
+      ');
+      $statement->bindValue(':game', $gameName);
+      $statement->bindValue(':user', $userName);
+      $statement->bindValue(':score', $score);
+      $statement->bindValue(':token', $token);
+      $statement->execute();
+      unset($pdo);
+    } catch (PDOException $error) {
+      printError();
+    }
   }
 
   function parseScoreData($chunked) {

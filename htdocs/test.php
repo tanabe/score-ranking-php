@@ -1,13 +1,12 @@
 <?php
-//echo md5('digdug' . 'test' . '123' . 'hogehoge');
-//exit;
 function hoge() {
-  $token = md5('SuperMarip' . 'MoPpP' . '213' . 'hogehoge');
-  $data = array(rand(0, 9999), 'SuperMarip', 'MoPpP', '213', $token);
+  $token = md5('ActionGame' . 'theuser' . '400' . 'HogeHoge');
+  $data = array(rand(0, 9999), 'ActionGame', 'theuser', '400', $token);
   echo base64_encode(implode('-', $data));
 }
+
 function huga() {
-  $data = array(rand(), 'SuperMarip', 'hogehoge');
+  $data = array(rand(), 'ActionGame', 'HogeHoge');
   echo base64_encode(implode('-', $data));
 }
 ?>
