@@ -29,7 +29,7 @@
         createTable();
         echo "ゲーム名: " . htmlspecialchars($gameName, ENT_QUOTES, 'UTF-8') . "<br>";
         echo "シークレットキー: " . htmlspecialchars($secretKey, ENT_QUOTES, 'UTF-8') . "<br>";
-        echo "で作成しました。init.php をサーバから削除してください。";
+        echo "で作成しました。setup.php をサーバから削除してください。";
         exit;
       }
     }
@@ -106,7 +106,7 @@
     <?php
       showMessage();
     ?>
-    <form method="POST" action="./init.php">
+    <form method="POST" action="./setup.php">
       <label for="gameName">ゲーム名(半角英数字10文字以内)</label>
       <input type="text" id="gameName" name="gameName" maxlength="10">
 
