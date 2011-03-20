@@ -2,12 +2,12 @@
 //echo md5('digdug' . 'test' . '123' . 'hogehoge');
 //exit;
 function hoge() {
-  $token = md5('digdug' . 'john' . '9876' . 'hogehoge');
-  $data = array(rand(0, 9999), 'digdug', 'john', '9876', $token);
+  $token = md5('SuperMarip' . 'MoPpP' . '213' . 'hogehoge');
+  $data = array(rand(0, 9999), 'SuperMarip', 'MoPpP', '213', $token);
   echo base64_encode(implode('-', $data));
 }
 function huga() {
-  $data = array(rand(), 'digdug', 'hogehoge');
+  $data = array(rand(), 'SuperMarip', 'hogehoge');
   echo base64_encode(implode('-', $data));
 }
 ?>
@@ -46,6 +46,7 @@ function huga() {
     <form method="POST" action="./ranking.php?action=ranking">
       <label for="data">ranking</label>
       <input type="text" id="ranking" name="ranking" maxlength="255" value="<?php huga() ?>">
+      <input type="text" id="total" name="total" maxlength="3" value="10">
       <button type="submit">送信</button>
     </form>
   </body>

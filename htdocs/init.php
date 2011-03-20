@@ -1,5 +1,10 @@
 <?php
+/**
+ *  create table
+ *  please delete this file after created database
+ */
   require_once 'config.php';
+
   $messages = array();
   $gameName;
   $secretKey;

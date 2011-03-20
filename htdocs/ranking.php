@@ -98,9 +98,14 @@
       $gameName = $result['gameName'];
       $secretKey = $result['secretKey'];
 
+      //TODO
+      $total = 10;
+      if (isset($_POST['total']) && (preg_match('/^[0-9]+$/', $_POST['total']))) {
+        $total = intval($_POST['total']);
+      }
+
       if (isValidGameName($gameName) && isValidSecretKey($secretKey)) {
-        $result = executeGetRankingStatement($gameName, $secretKey);
-        //TODO
+        $result = executeGetRankingStatement($gameName, $secretKey, $total);
         printRanking($result);
       } else {
         //error
@@ -111,12 +116,12 @@
     }
   }
 
-  function executeGetRankingStatement($gameName, $secretKey) {
+  function executeGetRankingStatement($gameName, $secretKey, $total) {
     $pdo = getDBManager();
-    //top 10 by default
-    $statement = $pdo->prepare('SELECT name, score FROM score WHERE (SELECT id FROM game WHERE name = :gameName and secret = :secretKey)ORDER BY score DESC LIMIT 0, 10');
+    $statement = $pdo->prepare('SELECT DISTINCT name, score FROM score WHERE (SELECT id FROM game WHERE name = :gameName AND secret = :secretKey) ORDER BY score DESC LIMIT 0, :total');
     $statement->bindValue(':gameName', $gameName);
     $statement->bindValue(':secretKey', $secretKey);
+    $statement->bindValue(':total', $total, PDO::PARAM_INT);
     $statement->execute();
     $result = $statement->fetchAll(PDO::FETCH_ASSOC);
     unset($pdo);
