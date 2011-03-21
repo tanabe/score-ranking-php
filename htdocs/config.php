@@ -19,3 +19,7 @@ function isValidUserName($userName) {
 function isValidScore($score) {
   return (preg_match('/^[0-9]{1,10}$/', $score) == 1) && (intval($score) >= 0);
 }
+
+function isValidToken($token) {
+  return preg_match('/^[a-zA-Z0-9]+$/', $token) == 1;
+}

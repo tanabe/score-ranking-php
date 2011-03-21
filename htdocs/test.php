@@ -1,12 +1,11 @@
 <?php
 function hoge() {
-  $token = md5('ActionGame' . 'theuser' . '400' . 'HogeHoge');
-  $data = array(rand(0, 9999), 'ActionGame', 'theuser', '400', $token);
-  echo base64_encode(implode('-', $data));
+  $token = md5('ActionGame' . 'hogeo' . '8888' . 'HogeHoge');
+  echo $token;
 }
 
 function huga() {
-  $data = array(rand(), 'ActionGame', 'HogeHoge');
+  $data = array(rand(0, 9999), 'ActionGame', 'HogeHoge');
   echo base64_encode(implode('-', $data));
 }
 ?>
@@ -22,12 +21,7 @@ function huga() {
     <meta http-equiv="content-style-type" content="text/css">
 
     <style type="text/css">
-      label {
-        display: block;
-      }
-
       input {
-        display: block;
         width: 500px;
       }
     </style>
@@ -36,17 +30,47 @@ function huga() {
   <body>
     <h1>test</h1>
 
+    <h2>add</h2>
     <form method="POST" action="./ranking.php?action=add">
-      <label for="data">add</label>
-      <input type="text" id="score" name="score" maxlength="255" value="<?php hoge() ?>">
-      <button type="submit">送信</button>
+
+      <p>
+        <label for="gameName">gameName</label>
+        <input type="text" name="gameName" maxlength="10" value="ActionGame">
+      </p>
+
+      <p>
+        <label for="userName">userName</label>
+        <input type="text" name="userName" maxlength="10" value="hogeo">
+      </p>
+
+      <p>
+        <label for="score">score</label>
+        <input type="text" name="score" maxlength="10" value="8888">
+      </p>
+
+      <p>
+        <label for="token">token</label>
+        <input type="text" name="token" maxlength="255" value="<?php echo hoge(); ?>">
+      </p>
+
+      <p>
+        <button type="submit">送信</button>
+      </p>
     </form>
 
+    <h2>ranking</h2>
     <form method="POST" action="./ranking.php?action=ranking">
-      <label for="data">ranking</label>
-      <input type="text" id="ranking" name="ranking" maxlength="255" value="<?php huga() ?>">
-      <input type="text" id="total" name="total" maxlength="3" value="10">
-      <button type="submit">送信</button>
+      <p>
+        <label for="gameName">gameName</label>
+        <input type="text" name="gameName" maxlength="10" value="ActionGame">
+      </p>
+      <p>
+        <label for="total">total</label>
+        <input type="text" name="total" maxlength="3" value="10">
+      </p>
+      <p>
+        <button type="submit">送信</button>
+      </p>
     </form>
   </body>
 </html>
