@@ -1,4 +1,0 @@
--- insert test data
--- INSERT INTO game (name, secret) VALUES ('digdug', 'hogehoge');
--- INSERT INTO score (gid, name, score)
--- VALUES ((SELECT id FROM game WHERE name = 'digdug' AND MD5(CONCAT('digdug' , 'test' , '123' , (SELECT secret FROM game WHERE name = 'digdug'))) = '2f3fe60c9179410906ebddc77a3e67c1'), 'test', '123');
