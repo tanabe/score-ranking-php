@@ -122,9 +122,10 @@
           </tr>
           <tr>
             <td>gameName (必須)</td>
-            <td>string<br>半角英数字 10 文字以内</td>
+            <td>string</td>
             <td>
-              ゲーム名
+              ゲーム名<br>
+              半角英数字 10 文字以内
             </td>
             <td>POST</td>
           </tr>
@@ -173,17 +174,19 @@
           </tr>
           <tr>
             <td>gameName (必須)</td>
-            <td>string<br>半角英数字 10 文字以内</td>
+            <td>string</td>
             <td>
-              ゲーム名
+              ゲーム名<br>
+              半角英数字 10 文字以内
             </td>
             <td>POST</td>
           </tr>
           <tr>
             <td>userName (必須)</td>
-            <td>string<br>半角英数字 10 文字以内</td>
+            <td>string</td>
             <td>
-              ユーザ名
+              ユーザ名<br>
+              半角英数字 10 文字以内
             </td>
             <td>POST</td>
           </tr>
@@ -199,7 +202,9 @@
             <td>token (必須)</td>
             <td>string</td>
             <td>
-              トークン
+              トークン<br>
+              「gameName」「userName」「score」「シークレットキー」<br>
+              を連結した文字列の MD5 ハッシュ値。
             </td>
             <td>POST</td>
           </tr>
