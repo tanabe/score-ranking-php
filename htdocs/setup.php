@@ -3,82 +3,92 @@
  *  create table
  *  please delete this file after created database
  */
-  require_once 'config.php';
+require_once 'config.php';
 
-  $messages = array();
-  $gameName;
-  $secretKey;
+$messages = array();
+$gameName;
+$secretKey;
 
-  function initialize() {
-    global $messages, $gameName, $secretKey;
-    if (isset($_POST['gameName'], $_POST['secretKey'])) {
-      $gameName = $_POST['gameName'];
-      $secretKey = $_POST['secretKey'];
-      $validGameName = isValidGameName($gameName);
-      $validSecretKey = isValidSecretKey($secretKey);
-      if (!$validGameName) {
-        $messages[] = "ゲーム名を入力してください";
-      }
+/**
+ *  initialize
+ */
+function initialize() {
+  global $messages, $gameName, $secretKey;
+  if (isset($_POST['gameName'], $_POST['secretKey'])) {
+    $gameName = $_POST['gameName'];
+    $secretKey = $_POST['secretKey'];
+    $validGameName = isValidGameName($gameName);
+    $validSecretKey = isValidSecretKey($secretKey);
+    if (!$validGameName) {
+      $messages[] = "ゲーム名を正しく入力してください。";
+    }
 
-      if (!$validSecretKey) {
-        $messages[] = "シークレットキーを入力してください";
-      }
+    if (!$validSecretKey) {
+      $messages[] = "シークレットキーを正しく入力してください。";
+    }
 
-      //is valid
-      if ($validGameName && $validSecretKey) {
-        createTable();
-        echo "ゲーム名: " . htmlspecialchars($gameName, ENT_QUOTES, 'UTF-8') . "<br>";
-        echo "シークレットキー: " . htmlspecialchars($secretKey, ENT_QUOTES, 'UTF-8') . "<br>";
-        echo "で作成しました。setup.php をサーバから削除してください。";
-        exit;
-      }
+    //is valid
+    if ($validGameName && $validSecretKey) {
+      createTable();
+      $message = "ゲーム名「" . htmlspecialchars($gameName, ENT_QUOTES, 'UTF-8') . "」";
+      $message .= "シークレットキー「" . htmlspecialchars($secretKey, ENT_QUOTES, 'UTF-8') . "」";
+      $message .= "で作成しました。setup.php をサーバから削除してください。";
+      $messages[] = $message;
     }
   }
+}
 
-  function showMessage() {
-    global $messages;
-    if (count($messages)) {
-      echo '<ul>';
-      foreach ($messages as $message) {
-        echo '<li>' . htmlspecialchars($message, ENT_QUOTES, 'UTF-8') . '</li>';
-      }
-      echo '</ul>';
+/**
+ *  create tables
+ */
+function createTable() {
+  global $gameName, $secretKey;
+  $pdo = new PDO('mysql:host=127.0.0.1; dbname=' . DB_NAME, DB_USER, DB_PASSWORD);
+  $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+  //$pdo->exec('DROP TABLE IF EXISTS score');
+  //$pdo->exec('DROP TABLE IF EXISTS game');
+
+  //create tables
+  $pdo->exec('CREATE TABLE IF NOT EXISTS game (
+                id INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
+                name VARCHAR(10) BINARY UNIQUE NOT NULL,
+                secret VARCHAR(32) BINARY NOT NULL,
+                INDEX(id)
+              ) ENGINE=InnoDB');
+
+  $pdo->exec('CREATE TABLE IF NOT EXISTS score (
+                id int NOT NULL PRIMARY KEY AUTO_INCREMENT,
+                gid int NOT NULL,
+                name VARCHAR(10) BINARY NOT NULL,
+                score int NOT NULL,
+                INDEX(gid),
+                FOREIGN KEY(gid) REFERENCES game(id)
+              ) ENGINE=InnoDB');
+
+  $statement = $pdo->prepare('INSERT IGNORE INTO game(name, secret) VALUES (:game, :secret)');
+  $statement->bindValue(':game', $gameName);
+  $statement->bindValue(':secret', $secretKey);
+  $statement->execute();
+}
+
+/**
+ *  show message
+ */
+function showMessage() {
+  global $messages;
+  if (count($messages)) {
+    echo '<ul>';
+    foreach ($messages as $message) {
+      echo '<li>' . htmlspecialchars($message, ENT_QUOTES, 'UTF-8') . '</li>';
     }
+    echo '</ul>';
   }
+}
 
-  function createTable() {
-    global $gameName, $secretKey;
-    $pdo = new PDO('mysql:host=127.0.0.1; dbname=' . DB_NAME, DB_USER, DB_PASSWORD);
-    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-    //$pdo->exec('DROP TABLE IF EXISTS score');
-    //$pdo->exec('DROP TABLE IF EXISTS game');
- 
-    //create tables
-    $pdo->exec('CREATE TABLE IF NOT EXISTS game (
-                  id INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
-                  name VARCHAR(10) BINARY UNIQUE NOT NULL,
-                  secret VARCHAR(32) BINARY NOT NULL,
-                  INDEX(id)
-                ) ENGINE=InnoDB');
-
-    $pdo->exec('CREATE TABLE IF NOT EXISTS score (
-                  id int NOT NULL PRIMARY KEY AUTO_INCREMENT,
-                  gid int NOT NULL,
-                  name VARCHAR(10) BINARY NOT NULL,
-                  score int NOT NULL,
-                  INDEX(gid),
-                  FOREIGN KEY(gid) REFERENCES game(id)
-                ) ENGINE=InnoDB');
-
-    $statement = $pdo->prepare('INSERT IGNORE INTO game(name, secret) VALUES (:game, :secret)');
-    $statement->bindValue(':game', $gameName);
-    $statement->bindValue(':secret', $secretKey);
-    $statement->execute();
-  }
-
-  //entry point
-  initialize();
+//entry point
+initialize();
 ?>
+
 <!DOCTYPE html>
 <html>
   <head>

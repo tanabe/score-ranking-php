@@ -2,38 +2,38 @@
   require_once 'config.php';
   header( "Content-Type: text/xml; Charset=utf-8" );
   echo "<?xml version=\"1.0\" encoding=\"utf-8\"?>\r\n";
-  if (isset($_GET['action'])) {
-    $actionName = $_GET['action'];
-    if (isAddAction($actionName)) {
-      addScore();
-    } else if (isRankingAction($actionName)) {
-      getRanking();
-    } else {
-      printError();
-    }
-  } else {
-    printError();
-  }
 
+  /**
+   *  validate add action name
+   *  @param $actionName action name
+   *  @return true of false
+   */
   function isAddAction($actionName) {
     return preg_match('/^add$/', $actionName) == 1;
   }
 
+  /**
+   *  validate ranking action name
+   *  @param $actionName action name
+   *  @return true of false
+   */
   function isRankingAction($actionName) {
     return preg_match('/^ranking$/', $actionName) == 1;
   }
-
-  function printError() {
-    echo "<result>error</result>";
-    exit;
-  }
   
+  /**
+   *  get PDO instance
+   *  @return PDO instance
+   */
   function getDBManager() {
     $pdo = new PDO('mysql:host=127.0.0.1; dbname=' . DB_NAME, DB_USER, DB_PASSWORD);
     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
     return $pdo;
   }
 
+  /**
+   *  add score
+   */
   function addScore() {
     if (isset($_POST['gameName']) && isValidGameName($_POST['gameName'])
         && isset($_POST['userName']) && isValidUserName($_POST['userName'])
@@ -53,6 +53,13 @@
     }
   }
 
+  /**
+   *  insert score to database
+   *  @param $gameName game name
+   *  @param $userName user name
+   *  @param $score score
+   *  @param $token token
+   */
   function executeAddScoreStatement($gameName, $userName, $score, $token) {
     try {
       $pdo = getDBManager();
@@ -74,6 +81,9 @@
     }
   }
 
+  /**
+   *  get ranking
+   */
   function getRanking() {
     if (isset($_POST['gameName']) && isValidGameName($_POST['gameName'])) {
       $gameName = $_POST['gameName'];
@@ -88,6 +98,11 @@
     }
   }
 
+  /**
+   *  fetch ranking data from database
+   *  @param $gameName game name
+   *  @param $total total
+   */
   function executeGetRankingStatement($gameName, $total) {
     $pdo = getDBManager();
     $statement = $pdo->prepare('SELECT DISTINCT name, score FROM score WHERE (SELECT id FROM game WHERE name = :gameName) ORDER BY score DESC LIMIT 0, :total');
@@ -99,6 +114,10 @@
     return $result;
   }
 
+  /**
+   *  print ranking XML
+   *  @param $ranking ranking data
+   */
   function printRanking($ranking) {
     echo "<result>";
     echo "<items>";
@@ -112,4 +131,22 @@
     echo "</result>";
   }
 
+  function printError() {
+    echo "<result>error</result>";
+    exit;
+  }
+
+  //entry point
+  if (isset($_GET['action'])) {
+    $actionName = $_GET['action'];
+    if (isAddAction($actionName)) {
+      addScore();
+    } else if (isRankingAction($actionName)) {
+      getRanking();
+    } else {
+      printError();
+    }
+  } else {
+    printError();
+  }
 ?>
